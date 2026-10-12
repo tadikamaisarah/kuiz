@@ -145,53 +145,57 @@
             </div>
         </section>
 
-        <section id="q2-section" class="w-full max-w-3xl bg-white rounded-2xl shadow-lg p-4 md:p-8 mt-4 section-hidden border-2 border-gray-100">
-            <div class="mb-6 flex flex-col md:flex-row md:items-center gap-2 border-b-2 border-gray-100 pb-4">
-                <span class="bg-purple-100 text-purple-800 font-bold px-3 py-1 rounded-lg w-max">Soalan 2</span>
-                <h2 class="text-xl md:text-2xl comic-font font-bold">
-                    Kira dan suaikan jawapan yang betul.
-                </h2>
-            </div>
-            
-            <div id="q2-container" class="relative w-full flex justify-between px-2 md:px-6 py-4">
-                <svg id="svg-q2" class="svg-layer"></svg>
+        <section id="q2-section" class="w-full max-w-3xl bg-white rounded-2xl shadow-lg p-4 md:p-8 mt-4 section-hidden border-2 border-gray-100 flex flex-col justify-between h-[85vh] sm:h-auto overflow-hidden">
+            <div>
+                <div class="mb-4 flex flex-col md:flex-row md:items-center gap-2 border-b-2 border-gray-100 pb-2">
+                    <span class="bg-purple-100 text-purple-800 font-bold px-3 py-1 rounded-lg w-max text-sm">Soalan 2</span>
+                    <h2 class="text-lg md:text-xl comic-font font-bold">Kira dan suaikan jawapan yang betul.</h2>
+                </div>
                 
-                <!-- Kiri: Persamaan -->
-                <div class="flex flex-col gap-6 z-20 w-3/4 max-w-[320px]">
-                    <div id="e2_7" class="match-item q2-paper p-3 shadow-[3px_3px_0_rgba(0,0,0,0.1)] flex items-center justify-between" data-t="src" data-v="7" data-q="2">
-                        <div class="flex-1 text-center text-3xl flex flex-wrap justify-center gap-1">🦑🦑🦑</div>
-                        <div class="text-4xl font-bold px-2">+</div>
-                        <div class="flex-1 text-center text-3xl flex flex-wrap justify-center gap-1">🦑🦑<br>🦑🦑</div>
+                <div id="q2-container" class="relative w-full flex justify-between py-2 flex-grow">
+                    <svg id="svg-q2" class="svg-layer"></svg>
+                    
+                    <!-- Kiri: Persamaan -->
+                    <div class="flex flex-col justify-around z-20 w-3/4 max-w-[280px]">
+                        <!-- Sotong -->
+                        <div id="e2_7" class="match-item q2-paper px-2 py-3 shadow-sm flex items-center justify-between" data-t="src" data-v="7" data-q="2">
+                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🦑🦑🦑</div>
+                            <div class="text-2xl font-bold px-1">+</div>
+                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🦑🦑<br>🦑🦑</div>
+                        </div>
+                        <!-- Bunga -->
+                        <div id="e2_5" class="match-item q2-paper px-2 py-3 shadow-sm flex items-center justify-between mt-2" data-t="src" data-v="5" data-q="2">
+                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none text-pink-500">🌸🌸🌸</div>
+                            <div class="text-2xl font-bold px-1">+</div>
+                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none text-pink-500">🌸🌸</div>
+                        </div>
+                        <!-- Kereta -->
+                        <div id="e2_6" class="match-item q2-paper px-2 py-3 shadow-sm flex items-center justify-between mt-2" data-t="src" data-v="6" data-q="2">
+                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🚗🚗<br>🚗</div>
+                            <div class="text-2xl font-bold px-1">+</div>
+                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🚗🚗<br>🚗</div>
+                        </div>
+                        <!-- Bulan -->
+                        <div id="e2_8" class="match-item q2-paper px-2 py-3 shadow-sm flex items-center justify-between mt-2" data-t="src" data-v="8" data-q="2">
+                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🌙🌙<br>🌙🌙</div>
+                            <div class="text-2xl font-bold px-1">+</div>
+                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🌙🌙<br>🌙🌙</div>
+                        </div>
                     </div>
-                    <div id="e2_5" class="match-item q2-paper p-3 shadow-[3px_3px_0_rgba(0,0,0,0.1)] flex items-center justify-between" data-t="src" data-v="5" data-q="2">
-                        <div class="flex-1 text-center text-3xl flex flex-wrap justify-center gap-1 opacity-90 text-pink-500">🌸🌸<br>🌸</div>
-                        <div class="text-4xl font-bold px-2 opacity-90">+</div>
-                        <div class="flex-1 text-center text-3xl flex flex-wrap justify-center gap-1 opacity-90 text-pink-500">🌸🌸</div>
-                    </div>
-                    <div id="e2_6" class="match-item q2-paper p-3 shadow-[3px_3px_0_rgba(0,0,0,0.1)] flex items-center justify-between" data-t="src" data-v="6" data-q="2">
-                        <div class="flex-1 text-center text-3xl flex flex-wrap justify-center gap-1">🚗🚗<br>🚗</div>
-                        <div class="text-4xl font-bold px-2">+</div>
-                        <div class="flex-1 text-center text-3xl flex flex-wrap justify-center gap-1">🚗🚗<br>🚗</div>
-                    </div>
-                    <div id="e2_8" class="match-item q2-paper p-3 shadow-[3px_3px_0_rgba(0,0,0,0.1)] flex items-center justify-between" data-t="src" data-v="8" data-q="2">
-                        <div class="flex-1 text-center text-3xl flex flex-wrap justify-center gap-1">🌙🌙<br>🌙🌙</div>
-                        <div class="text-4xl font-bold px-2">+</div>
-                        <div class="flex-1 text-center text-3xl flex flex-wrap justify-center gap-1">🌙🌙<br>🌙🌙</div>
-                    </div>
-                </div>
 
-                <!-- Kanan: Jawapan Bulat -->
-                <div class="flex flex-col gap-6 justify-around z-20 w-1/4 max-w-[100px] items-end pb-4 pt-4">
-                    <div id="a2_7" class="match-item q2-circle w-16 h-16 md:w-20 md:h-20 text-4xl md:text-5xl font-sans shadow-md" data-t="tgt" data-v="7" data-q="2">7</div>
-                    <div id="a2_5" class="match-item q2-circle w-16 h-16 md:w-20 md:h-20 text-4xl md:text-5xl font-sans shadow-md" data-t="tgt" data-v="5" data-q="2">5</div>
-                    <div id="a2_6" class="match-item q2-circle w-16 h-16 md:w-20 md:h-20 text-4xl md:text-5xl font-sans shadow-md" data-t="tgt" data-v="6" data-q="2">6</div>
-                    <div id="a2_8" class="match-item q2-circle w-16 h-16 md:w-20 md:h-20 text-4xl md:text-5xl font-sans shadow-md" data-t="tgt" data-v="8" data-q="2">8</div>
+                    <!-- Kanan: Jawapan Bulat (Disilangkan) -->
+                    <div class="flex flex-col justify-around z-20 w-1/4 max-w-[80px] items-end py-2">
+                        <div id="a2_6" class="match-item q2-circle w-14 h-14 md:w-16 md:h-16 text-3xl font-sans shadow-md" data-t="tgt" data-v="6" data-q="2">6</div>
+                        <div id="a2_8" class="match-item q2-circle w-14 h-14 md:w-16 md:h-16 text-3xl font-sans shadow-md" data-t="tgt" data-v="8" data-q="2">8</div>
+                        <div id="a2_5" class="match-item q2-circle w-14 h-14 md:w-16 md:h-16 text-3xl font-sans shadow-md" data-t="tgt" data-v="5" data-q="2">5</div>
+                        <div id="a2_7" class="match-item q2-circle w-14 h-14 md:w-16 md:h-16 text-3xl font-sans shadow-md" data-t="tgt" data-v="7" data-q="2">7</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="mt-10 flex justify-between">
+            <div class="mt-4 flex justify-between shrink-0">
                 <button id="btn-prev" class="bg-gray-400 text-white font-bold py-3 px-6 rounded-xl shadow-[0_4px_0_rgb(156,163,175)]">Kembali</button>
-                <button id="btn-submit" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-xl shadow-[0_4px_0_rgb(37,99,235)] text-lg comic-font text-white">Hantar Jawapan!</button>
+                <button id="btn-submit" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-xl shadow-[0_4px_0_rgb(37,99,235)] text-lg comic-font">Hantar!</button>
             </div>
         </section>
 
@@ -254,61 +258,6 @@
                 </div>
             </div>
         </section>
-        <section id="q2-section" class="w-full max-w-3xl bg-white rounded-2xl shadow-lg p-4 md:p-8 mt-4 section-hidden border-2 border-gray-100 flex flex-col justify-between h-[85vh] sm:h-auto overflow-hidden">
-            <div>
-                <div class="mb-4 flex flex-col md:flex-row md:items-center gap-2 border-b-2 border-gray-100 pb-2">
-                    <span class="bg-purple-100 text-purple-800 font-bold px-3 py-1 rounded-lg w-max text-sm">Soalan 2</span>
-                    <h2 class="text-lg md:text-xl comic-font font-bold">Kira dan suaikan jawapan yang betul.</h2>
-                </div>
-                
-                <div id="q2-container" class="relative w-full flex justify-between py-2 flex-grow">
-                    <svg id="svg-q2" class="svg-layer"></svg>
-                    
-                    <!-- Kiri: Persamaan -->
-                    <div class="flex flex-col justify-around z-20 w-3/4 max-w-[280px]">
-                        <!-- Sotong -->
-                        <div id="e2_7" class="match-item q2-paper px-2 py-3 shadow-sm flex items-center justify-between" data-t="src" data-v="7" data-q="2">
-                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🦑🦑🦑</div>
-                            <div class="text-2xl font-bold px-1">+</div>
-                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🦑🦑<br>🦑🦑</div>
-                        </div>
-                        <!-- Bunga -->
-                        <div id="e2_5" class="match-item q2-paper px-2 py-3 shadow-sm flex items-center justify-between mt-2" data-t="src" data-v="5" data-q="2">
-                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🌸🌸🌸</div>
-                            <div class="text-2xl font-bold px-1">+</div>
-                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🌸🌸</div>
-                        </div>
-                        <!-- Kereta -->
-                        <div id="e2_6" class="match-item q2-paper px-2 py-3 shadow-sm flex items-center justify-between mt-2" data-t="src" data-v="6" data-q="2">
-                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🚗🚗<br>🚗</div>
-                            <div class="text-2xl font-bold px-1">+</div>
-                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🚗🚗<br>🚗</div>
-                        </div>
-                        <!-- Bulan -->
-                        <div id="e2_8" class="match-item q2-paper px-2 py-3 shadow-sm flex items-center justify-between mt-2" data-t="src" data-v="8" data-q="2">
-                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🌙🌙<br>🌙🌙</div>
-                            <div class="text-2xl font-bold px-1">+</div>
-                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🌙🌙<br>🌙🌙</div>
-                        </div>
-                    </div>
-
-                    <!-- Kanan: Jawapan Bulat (Disilangkan) -->
-                    <div class="flex flex-col justify-around z-20 w-1/4 max-w-[80px] items-end py-2">
-                        <div id="a2_6" class="match-item q2-circle w-14 h-14 md:w-16 md:h-16 text-3xl font-sans shadow-md" data-t="tgt" data-v="6" data-q="2">6</div>
-                        <div id="a2_8" class="match-item q2-circle w-14 h-14 md:w-16 md:h-16 text-3xl font-sans shadow-md" data-t="tgt" data-v="8" data-q="2">8</div>
-                        <div id="a2_5" class="match-item q2-circle w-14 h-14 md:w-16 md:h-16 text-3xl font-sans shadow-md" data-t="tgt" data-v="5" data-q="2">5</div>
-                        <div id="a2_7" class="match-item q2-circle w-14 h-14 md:w-16 md:h-16 text-3xl font-sans shadow-md" data-t="tgt" data-v="7" data-q="2">7</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-4 flex justify-between shrink-0">
-                <button id="btn-prev" class="bg-gray-400 text-white font-bold py-3 px-6 rounded-xl shadow-[0_4px_0_rgb(156,163,175)]">Kembali</button>
-                <button id="btn-submit" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-xl shadow-[0_4px_0_rgb(37,99,235)] text-lg comic-font">Hantar!</button>
-            </div>
-        </section>
-
-
     </main>
 
     <div id="modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 px-4 backdrop-blur-sm">
@@ -544,7 +493,6 @@
         }
         document.getElementById('filter-class').onchange = renderTable;
 
-        // Admin Tabs
         document.getElementById('tab-tetapan').onclick = () => {
             document.getElementById('view-rekod').classList.add('hidden');
             document.getElementById('view-tetapan').classList.remove('section-hidden');
