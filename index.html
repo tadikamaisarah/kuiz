@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuiz Matematik Interaktif</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap');
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .comic-font { font-family: 'Comic Neue', cursive; }
+        
+        #loading-overlay {
+            position: fixed; inset: 0; background: rgba(255,255,255,0.9);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 9999;
+        }
+        .spinner {
+            border: 6px solid #e2e8f0; border-top: 6px solid #22c55e;
+            border-radius: 50%; width: 50px; height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .svg-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 10;
+        }
+        line { stroke: #1f2937; stroke-width: 3; stroke-linecap: round; transition: all 0.3s ease; }
+        
+        .match-item {
+            cursor: pointer; position: relative; z-index: 20;
+            background: white; transition: all 0.2s ease;
+            user-select: none;
+        }
+        .match-item:active { transform: scale(0.95); }
+        .match-item.selected {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3) !important;
+            transform: scale(1.05);
+            z-index: 30;
+        }
+        
+        .q1-box {
+            border: 3px solid #111827; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .q2-paper {
+            border: 3px solid #111827; border-radius: 4px;
+            background: white; position: relative;
+        }
+        .q2-circle {
+            border: 3px solid #111827; border-radius: 50%; background: white;
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        .section-hidden { display: none !important; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div id="loading-overlay">
+        <div class="spinner mb-4"></div>
+        <h2 class="text-2xl font-bold comic-font text-gray-800">Sila Tunggu...</h2>
+        <p class="text-gray-500 font-semibold mt-2">Memuatkan data kelas</p>
+    </div>
+
+    <header class="bg-green-500 text-white p-4 text-center shadow-md relative z-40">
+        <h1 id="main-title" class="text-3xl md:text-4xl font-extrabold comic-font drop-shadow-md cursor-pointer select-none">Mari Belajar Kira!</h1>
+        <p class="font-bold text-green-100 mt-1">Latihan Matematik Menyeronokkan</p>
+    </header>
+
+    <main class="flex-grow flex flex-col items-center p-3 md:p-6 w-full max-w-4xl mx-auto pb-20">
+        
+        <section id="reg-section" class="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 mt-6 border-2 border-gray-100">
+            <div class="text-center mb-6">
+                <i class="fas fa-user-graduate text-4xl text-blue-500 mb-3"></i>
+                <h2 class="text-2xl font-bold comic-font">Maklumat Murid</h2>
+            </div>
+            <form id="reg-form" class="space-y-5">
+                <div>
+                    <label class="block font-bold text-gray-700 mb-2">Nama Penuh <span class="text-sm font-normal text-blue-600">(Boleh letak nama sendiri)</span></label>
+                    <input type="text" id="student-name" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none" placeholder="Masukkan nama...">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-2">Kelas / Nama Guru</label>
+                    <select id="student-class" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white focus:border-blue-500 focus:outline-none font-semibold text-gray-700">
+                        <option value="" disabled selected>Memuatkan senarai...</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl mt-4 shadow-[0_4px_0_rgb(37,99,235)] hover:mt-1 hover:shadow-[0_3px_0_rgb(37,99,235)] transition-all text-xl comic-font">
+                    Mula Latihan <i class="fas fa-play ml-2"></i>
+                </button>
+            </form>
+        </section>
+
+        <section id="q1-section" class="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-4 md:p-8 mt-4 section-hidden border-2 border-gray-100">
+            <div class="mb-6 flex flex-col md:flex-row md:items-center gap-2 border-b-2 border-gray-100 pb-4">
+                <span class="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-lg w-max">Soalan 1</span>
+                <h2 class="text-xl md:text-2xl comic-font font-bold">
+                    Arahan: Suaikan angka dengan bilangan benda.
+                </h2>
+            </div>
+            <p class="text-sm text-gray-500 text-center font-bold mb-4 bg-yellow-50 p-2 rounded-lg border border-yellow-200"><i class="fas fa-hand-pointer mr-1"></i> Klik nombor, kemudian klik gambar untuk menyambung garisan.</p>
+
+            <div id="q1-container" class="relative w-full flex justify-between px-2 md:px-10 py-4">
+                <svg id="svg-q1" class="svg-layer"></svg>
+                
+                <!-- Kiri: Nombor -->
+                <div class="flex flex-col gap-3 z-20 w-1/4 max-w-[90px]">
+                    <div id="n1_ex" class="match-item q1-box h-20 text-4xl font-bold font-sans relative !border-gray-400 bg-gray-50" data-t="src" data-v="4" data-q="1">
+                        <span class="absolute -top-3 left-1 bg-white px-1 text-[10px] font-bold text-gray-500 border border-gray-300 rounded">Contoh:</span>4
+                    </div>
+                    <div id="n1_1" class="match-item q1-box h-20 text-4xl font-bold font-sans shadow-sm" data-t="src" data-v="1" data-q="1">1</div>
+                    <div id="n1_3" class="match-item q1-box h-20 text-4xl font-bold font-sans shadow-sm" data-t="src" data-v="3" data-q="1">3</div>
+                    <div id="n1_5" class="match-item q1-box h-20 text-4xl font-bold font-sans shadow-sm" data-t="src" data-v="5" data-q="1">5</div>
+                    <div id="n1_2" class="match-item q1-box h-20 text-4xl font-bold font-sans shadow-sm" data-t="src" data-v="2" data-q="1">2</div>
+                    <div id="n1_4" class="match-item q1-box h-20 text-4xl font-bold font-sans shadow-sm" data-t="src" data-v="4" data-q="1">4</div>
+                </div>
+
+                <!-- Kanan: Objek -->
+                <div class="flex flex-col gap-3 z-20 w-2/3 max-w-[220px]">
+                    <div id="o1_3" class="match-item q1-box h-20 text-3xl shadow-sm flex flex-wrap gap-1 px-4 content-center" data-t="tgt" data-v="3" data-q="1">⚽ ⚽ ⚽</div>
+                    <div id="o1_2" class="match-item q1-box h-20 text-3xl shadow-sm flex flex-wrap gap-1 px-4 content-center" data-t="tgt" data-v="2" data-q="1">🍎 🍎</div>
+                    <div id="o1_ex" class="match-item q1-box h-20 text-3xl flex flex-wrap justify-center gap-1 px-4 content-center !border-gray-400 bg-gray-50" data-t="tgt" data-v="4" data-q="1">⭐ ⭐ ⭐ ⭐</div>
+                    <div id="o1_1" class="match-item q1-box h-20 text-3xl shadow-sm flex flex-wrap gap-1 px-4 content-center" data-t="tgt" data-v="1" data-q="1">🍦</div>
+                    <div id="o1_4" class="match-item q1-box h-20 text-3xl shadow-sm flex flex-wrap justify-center gap-1 px-4 content-center" data-t="tgt" data-v="4" data-q="1">🍌 🍌 <br>🍌 🍌</div>
+                    <div id="o1_5" class="match-item q1-box h-20 text-3xl shadow-sm flex flex-wrap justify-center gap-1 px-2 content-center leading-tight" data-t="tgt" data-v="5" data-q="1">🥚 🥚 🥚<br>🥚 🥚</div>
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-end">
+                <button id="btn-next" class="bg-green-500 text-white font-bold py-3 px-8 rounded-xl shadow-[0_4px_0_rgb(21,128,61)] text-lg">Seterusnya <i class="fas fa-arrow-right ml-2"></i></button>
+            </div>
+        </section>
+
+        <section id="q2-section" class="w-full max-w-3xl bg-white rounded-2xl shadow-lg p-4 md:p-8 mt-4 section-hidden border-2 border-gray-100">
+            <div class="mb-6 flex flex-col md:flex-row md:items-center gap-2 border-b-2 border-gray-100 pb-4">
+                <span class="bg-purple-100 text-purple-800 font-bold px-3 py-1 rounded-lg w-max">Soalan 2</span>
+                <h2 class="text-xl md:text-2xl comic-font font-bold">
+                    Kira dan suaikan jawapan yang betul.
+                </h2>
+            </div>
+            
+            <div id="q2-container" class="relative w-full flex justify-between px-2 md:px-6 py-4">
+                <svg id="svg-q2" class="svg-layer"></svg>
+                
+                <!-- Kiri: Persamaan -->
+                <div class="flex flex-col gap-6 z-20 w-3/4 max-w-[320px]">
+                    <div id="e2_7" class="match-item q2-paper p-3 shadow-[3px_3px_0_rgba(0,0,0,0.1)] flex items-center justify-between" data-t="src" data-v="7" data-q="2">
+                        <div class="flex-1 text-center text-3xl flex flex-wrap justify-center gap-1">🦑🦑🦑</div>
+                        <div class="text-4xl font-bold px-2">+</div>
+                        <div class="flex-1 text-center text-3xl flex flex-wrap justify-center gap-1">🦑🦑<br>🦑🦑</div>
+                    </div>
+                    <div id="e2_5" class="match-item q2-paper p-3 shadow-[3px_3px_0_rgba(0,0,0,0.1)] flex items-center justify-between" data-t="src" data-v="5" data-q="2">
+                        <div class="flex-1 text-center text-3xl flex flex-wrap justify-center gap-1 opacity-90 text-pink-500">🌸🌸<br>🌸</div>
+                        <div class="text-4xl font-bold px-2 opacity-90">+</div>
+                        <div class="flex-1 text-center text-3xl flex flex-wrap justify-center gap-1 opacity-90 text-pink-500">🌸🌸</div>
+                    </div>
+                    <div id="e2_6" class="match-item q2-paper p-3 shadow-[3px_3px_0_rgba(0,0,0,0.1)] flex items-center justify-between" data-t="src" data-v="6" data-q="2">
+                        <div class="flex-1 text-center text-3xl flex flex-wrap justify-center gap-1">🚗🚗<br>🚗</div>
+                        <div class="text-4xl font-bold px-2">+</div>
+                        <div class="flex-1 text-center text-3xl flex flex-wrap justify-center gap-1">🚗🚗<br>🚗</div>
+                    </div>
+                    <div id="e2_8" class="match-item q2-paper p-3 shadow-[3px_3px_0_rgba(0,0,0,0.1)] flex items-center justify-between" data-t="src" data-v="8" data-q="2">
+                        <div class="flex-1 text-center text-3xl flex flex-wrap justify-center gap-1">🌙🌙<br>🌙🌙</div>
+                        <div class="text-4xl font-bold px-2">+</div>
+                        <div class="flex-1 text-center text-3xl flex flex-wrap justify-center gap-1">🌙🌙<br>🌙🌙</div>
+                    </div>
+                </div>
+
+                <!-- Kanan: Jawapan Bulat -->
+                <div class="flex flex-col gap-6 justify-around z-20 w-1/4 max-w-[100px] items-end pb-4 pt-4">
+                    <div id="a2_7" class="match-item q2-circle w-16 h-16 md:w-20 md:h-20 text-4xl md:text-5xl font-sans shadow-md" data-t="tgt" data-v="7" data-q="2">7</div>
+                    <div id="a2_5" class="match-item q2-circle w-16 h-16 md:w-20 md:h-20 text-4xl md:text-5xl font-sans shadow-md" data-t="tgt" data-v="5" data-q="2">5</div>
+                    <div id="a2_6" class="match-item q2-circle w-16 h-16 md:w-20 md:h-20 text-4xl md:text-5xl font-sans shadow-md" data-t="tgt" data-v="6" data-q="2">6</div>
+                    <div id="a2_8" class="match-item q2-circle w-16 h-16 md:w-20 md:h-20 text-4xl md:text-5xl font-sans shadow-md" data-t="tgt" data-v="8" data-q="2">8</div>
+                </div>
+            </div>
+
+            <div class="mt-10 flex justify-between">
+                <button id="btn-prev" class="bg-gray-400 text-white font-bold py-3 px-6 rounded-xl shadow-[0_4px_0_rgb(156,163,175)]">Kembali</button>
+                <button id="btn-submit" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-xl shadow-[0_4px_0_rgb(37,99,235)] text-lg comic-font text-white">Hantar Jawapan!</button>
+            </div>
+        </section>
+
+        <section id="result-section" class="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 mt-10 section-hidden text-center border-2 border-green-100">
+            <i class="fas fa-medal text-6xl text-yellow-400 mb-4 drop-shadow-lg"></i>
+            <h2 class="text-3xl font-bold comic-font mb-2">Tahniah!</h2>
+            <p class="text-xl font-bold text-gray-700" id="res-name"></p>
+            <p class="text-gray-500 font-semibold mb-6" id="res-class"></p>
+            
+            <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 mb-8">
+                <p class="text-gray-600 font-bold mb-1">Markah Anda:</p>
+                <div class="text-6xl font-black text-blue-600 comic-font" id="res-score">0/10</div>
+            </div>
+        </section>
+
+        <section id="admin-section" class="w-full max-w-4xl bg-white rounded-2xl shadow-xl p-4 md:p-8 mt-10 section-hidden border-2 border-indigo-200">
+            <div id="admin-login" class="max-w-sm mx-auto my-8 text-center">
+                <i class="fas fa-lock text-4xl text-gray-400 mb-4"></i>
+                <h2 class="text-2xl font-bold mb-4">Log Masuk Guru</h2>
+                <input type="password" id="admin-pin" placeholder="PIN" class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl mb-4 text-center text-3xl tracking-[0.5em] font-mono focus:border-indigo-500 focus:outline-none">
+                <button id="btn-login" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl shadow-[0_4px_0_rgb(67,56,202)] text-lg">Masuk</button>
+            </div>
+            
+            <div id="admin-dash" class="section-hidden">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 border-b-2 border-gray-100 pb-4 gap-4">
+                    <h2 class="text-2xl font-bold comic-font text-indigo-900"><i class="fas fa-chalkboard-teacher mr-2"></i>Panel Guru</h2>
+                    <div class="flex gap-2">
+                        <button id="tab-rekod" class="px-5 py-2 bg-indigo-100 font-bold rounded-lg text-indigo-800 transition-colors">Rekod Murid</button>
+                        <button id="tab-tetapan" class="px-5 py-2 hover:bg-gray-100 font-bold rounded-lg text-gray-600 transition-colors">Tetapan Kelas</button>
+                        <button id="btn-logout" class="px-5 py-2 text-red-600 font-bold hover:bg-red-50 rounded-lg"><i class="fas fa-sign-out-alt"></i></button>
+                    </div>
+                </div>
+                
+                <div id="view-rekod">
+                    <div class="flex items-center gap-3 mb-4 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <i class="fas fa-filter text-gray-400"></i>
+                        <select id="filter-class" class="p-2 border border-gray-300 rounded-lg w-full max-w-xs font-bold text-gray-700 focus:outline-none focus:border-indigo-500">
+                            <option value="all">Semua Kelas</option>
+                        </select>
+                        <button onclick="fetchAdminData()" class="ml-auto bg-white border border-gray-300 p-2 rounded-lg hover:bg-gray-100 text-gray-600"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                    <div class="overflow-x-auto rounded-lg border border-gray-200">
+                        <table class="w-full text-left border-collapse min-w-[500px]">
+                            <thead><tr class="bg-gray-100 border-b-2 border-gray-200"><th class="p-4 font-bold text-gray-700">Nama Murid</th><th class="p-4 font-bold text-gray-700">Kelas / Guru</th><th class="p-4 text-center font-bold text-gray-700">Markah</th></tr></thead>
+                            <tbody id="table-body" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="view-tetapan" class="section-hidden max-w-xl mx-auto">
+                    <h3 class="font-bold text-lg mb-4 text-gray-700">Urus Senarai Kelas / Guru</h3>
+                    <div class="flex gap-2 mb-6">
+                        <input type="text" id="new-class-input" placeholder="Cth: Kelas Bestari (Cikgu Amin)" class="flex-grow px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-indigo-500 focus:outline-none font-semibold">
+                        <button id="btn-add-class" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-indigo-700"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <ul id="list-classes" class="border-2 border-gray-200 rounded-xl divide-y divide-gray-200 mb-6 bg-white shadow-sm overflow-hidden"></ul>
+                    <button id="btn-save-settings" class="w-full bg-green-500 text-white font-bold py-4 rounded-xl shadow-[0_4px_0_rgb(21,128,61)] text-xl hover:mt-1 hover:shadow-[0_3px_0_rgb(21,128,61)] transition-all">
+                        Simpan Perubahan ke Server
+                    </button>
+                </div>
+            </div>
+        </section>
+        <section id="q2-section" class="w-full max-w-3xl bg-white rounded-2xl shadow-lg p-4 md:p-8 mt-4 section-hidden border-2 border-gray-100 flex flex-col justify-between h-[85vh] sm:h-auto overflow-hidden">
+            <div>
+                <div class="mb-4 flex flex-col md:flex-row md:items-center gap-2 border-b-2 border-gray-100 pb-2">
+                    <span class="bg-purple-100 text-purple-800 font-bold px-3 py-1 rounded-lg w-max text-sm">Soalan 2</span>
+                    <h2 class="text-lg md:text-xl comic-font font-bold">Kira dan suaikan jawapan yang betul.</h2>
+                </div>
+                
+                <div id="q2-container" class="relative w-full flex justify-between py-2 flex-grow">
+                    <svg id="svg-q2" class="svg-layer"></svg>
+                    
+                    <!-- Kiri: Persamaan -->
+                    <div class="flex flex-col justify-around z-20 w-3/4 max-w-[280px]">
+                        <!-- Sotong -->
+                        <div id="e2_7" class="match-item q2-paper px-2 py-3 shadow-sm flex items-center justify-between" data-t="src" data-v="7" data-q="2">
+                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🦑🦑🦑</div>
+                            <div class="text-2xl font-bold px-1">+</div>
+                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🦑🦑<br>🦑🦑</div>
+                        </div>
+                        <!-- Bunga -->
+                        <div id="e2_5" class="match-item q2-paper px-2 py-3 shadow-sm flex items-center justify-between mt-2" data-t="src" data-v="5" data-q="2">
+                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🌸🌸🌸</div>
+                            <div class="text-2xl font-bold px-1">+</div>
+                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🌸🌸</div>
+                        </div>
+                        <!-- Kereta -->
+                        <div id="e2_6" class="match-item q2-paper px-2 py-3 shadow-sm flex items-center justify-between mt-2" data-t="src" data-v="6" data-q="2">
+                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🚗🚗<br>🚗</div>
+                            <div class="text-2xl font-bold px-1">+</div>
+                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🚗🚗<br>🚗</div>
+                        </div>
+                        <!-- Bulan -->
+                        <div id="e2_8" class="match-item q2-paper px-2 py-3 shadow-sm flex items-center justify-between mt-2" data-t="src" data-v="8" data-q="2">
+                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🌙🌙<br>🌙🌙</div>
+                            <div class="text-2xl font-bold px-1">+</div>
+                            <div class="flex-1 text-center text-xl flex flex-wrap justify-center gap-1 leading-none">🌙🌙<br>🌙🌙</div>
+                        </div>
+                    </div>
+
+                    <!-- Kanan: Jawapan Bulat (Disilangkan) -->
+                    <div class="flex flex-col justify-around z-20 w-1/4 max-w-[80px] items-end py-2">
+                        <div id="a2_6" class="match-item q2-circle w-14 h-14 md:w-16 md:h-16 text-3xl font-sans shadow-md" data-t="tgt" data-v="6" data-q="2">6</div>
+                        <div id="a2_8" class="match-item q2-circle w-14 h-14 md:w-16 md:h-16 text-3xl font-sans shadow-md" data-t="tgt" data-v="8" data-q="2">8</div>
+                        <div id="a2_5" class="match-item q2-circle w-14 h-14 md:w-16 md:h-16 text-3xl font-sans shadow-md" data-t="tgt" data-v="5" data-q="2">5</div>
+                        <div id="a2_7" class="match-item q2-circle w-14 h-14 md:w-16 md:h-16 text-3xl font-sans shadow-md" data-t="tgt" data-v="7" data-q="2">7</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 flex justify-between shrink-0">
+                <button id="btn-prev" class="bg-gray-400 text-white font-bold py-3 px-6 rounded-xl shadow-[0_4px_0_rgb(156,163,175)]">Kembali</button>
+                <button id="btn-submit" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-xl shadow-[0_4px_0_rgb(37,99,235)] text-lg comic-font">Hantar!</button>
+            </div>
+        </section>
+
+
+    </main>
+
+    <div id="modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 px-4 backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-2xl max-w-sm w-full text-center shadow-2xl transform transition-transform">
+            <h3 id="modal-title" class="text-2xl font-bold mb-3 comic-font text-gray-800">Notis</h3>
+            <p id="modal-msg" class="mb-8 text-gray-600 font-semibold"></p>
+            <button onclick="document.getElementById('modal').classList.add('hidden')" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold shadow-[0_4px_0_rgb(37,99,235)] w-full hover:bg-blue-700">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwZUzxMUBML4XcZYfeFSGghXZA0P580kEP8k2cQquK_qCzypok9FPaN_TWxpVrl4iVEyw/exec';
+        let classList = [];
+        let state = {
+            student: { name: '', cls: '' },
+            q1: { pairs: {}, score: 0 },
+            q2: { pairs: {}, score: 0 }
+        };
+
+        const secIds = ['reg', 'q1', 'q2', 'result', 'admin'];
+        const show = (id) => {
+            secIds.forEach(s => document.getElementById(s + '-section').classList.add('section-hidden'));
+            document.getElementById(id + '-section').classList.remove('section-hidden');
+            if(id==='q1') setTimeout(drawLines1, 100);
+            if(id==='q2') setTimeout(drawLines2, 100);
+            window.scrollTo(0,0);
+        };
+        const alertMsg = (title, msg) => {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-msg').textContent = msg;
+            document.getElementById('modal').classList.remove('hidden', 'flex');
+            document.getElementById('modal').classList.add('flex');
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch(`${SCRIPT_URL}?action=get_classes`)
+            .then(res => res.json())
+            .then(data => {
+                classList = data.classes || ["Kelas 1", "Kelas 2"];
+                populateSelect();
+                document.getElementById('loading-overlay').style.display = 'none';
+            })
+            .catch(() => {
+                classList = ["Gagal muat senarai. Refresh web."];
+                populateSelect();
+                document.getElementById('loading-overlay').style.display = 'none';
+            });
+            drawExampleLine();
+        });
+
+        function populateSelect() {
+            let html = '<option value="" disabled selected>-- Pilih Kelas / Guru --</option>';
+            classList.forEach(c => html += `<option value="${c}">${c}</option>`);
+            document.getElementById('student-class').innerHTML = html;
+            document.getElementById('filter-class').innerHTML = '<option value="all">Tunjuk Semua</option>' + html;
+        }
+
+        document.querySelectorAll('.match-item:not(#n1_ex):not(#o1_ex)').forEach(item => {
+            item.addEventListener('click', function() {
+                let q = this.dataset.q;
+                let type = this.dataset.t;
+                let container = document.getElementById(`q${q}-container`);
+                
+                // Highlight item
+                container.querySelectorAll(`.match-item[data-t="${type}"]`).forEach(n => n.classList.remove('selected'));
+                this.classList.add('selected');
+
+                // Check pair
+                let src = container.querySelector('.match-item[data-t="src"].selected');
+                let tgt = container.querySelector('.match-item[data-t="tgt"].selected');
+                
+                if(src && tgt) {
+                    if(q === '1') state.q1.pairs[tgt.id] = src.id; // Map Object ID -> Number ID
+                    if(q === '2') state.q2.pairs[src.id] = tgt.id; // Map Equation ID -> Circle ID
+                    
+                    src.classList.remove('selected');
+                    tgt.classList.remove('selected');
+                    q === '1' ? drawLines1() : drawLines2();
+                }
+            });
+        });
+
+        function drawLine(svg, el1, el2, container, color='#1f2937', isDashed=false) {
+            if(!el1 || !el2) return;
+            let r1 = el1.getBoundingClientRect(), r2 = el2.getBoundingClientRect(), cR = container.getBoundingClientRect();
+            let line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            
+            // X dari hujung kanan kiri, X ke tepi kiri kanan
+            line.setAttribute('x1', (r1.right - cR.left)); 
+            line.setAttribute('y1', (r1.top + r1.height/2 - cR.top));
+            line.setAttribute('x2', (r2.left - cR.left));  
+            line.setAttribute('y2', (r2.top + r2.height/2 - cR.top));
+            
+            line.style.stroke = color;
+            if(isDashed) line.setAttribute('stroke-dasharray', '8,8');
+            svg.appendChild(line);
+        }
+
+        function drawExampleLine() {
+            let svg = document.getElementById('svg-q1');
+            let container = document.getElementById('q1-container');
+            drawLine(svg, document.getElementById('n1_ex'), document.getElementById('o1_ex'), container, '#9ca3af', true);
+        }
+
+        function drawLines1() {
+            let svg = document.getElementById('svg-q1'); 
+            svg.innerHTML = ''; drawExampleLine();
+            let container = document.getElementById('q1-container');
+            for(let [tgt, src] of Object.entries(state.q1.pairs)) {
+                drawLine(svg, document.getElementById(src), document.getElementById(tgt), container);
+            }
+        }
+        function drawLines2() {
+            let svg = document.getElementById('svg-q2'); svg.innerHTML = '';
+            let container = document.getElementById('q2-container');
+            for(let [src, tgt] of Object.entries(state.q2.pairs)) {
+                drawLine(svg, document.getElementById(src), document.getElementById(tgt), container);
+            }
+        }
+        window.addEventListener('resize', () => { drawLines1(); drawLines2(); });
+
+        document.getElementById('reg-form').onsubmit = (e) => {
+            e.preventDefault();
+            state.student.name = document.getElementById('student-name').value;
+            state.student.cls = document.getElementById('student-class').value;
+            show('q1');
+        };
+
+        document.getElementById('btn-next').onclick = () => {
+            // Q1 must have 5 user matches (plus 1 example = total 6 objects)
+            if(Object.keys(state.q1.pairs).length < 5) return alertMsg("Belum Selesai", "Sila padankan semua garisan untuk Soalan 1.");
+            show('q2');
+        };
+        document.getElementById('btn-prev').onclick = () => show('q1');
+
+        document.getElementById('btn-submit').onclick = () => {
+            if(Object.keys(state.q2.pairs).length < 4) return alertMsg("Belum Selesai", "Sila padankan semua jawapan untuk Soalan 2.");
+            
+            // Pengiraan Markah. Soalan 1 (5 Soalan, 1 markah). Soalan 2 (4 soalan, 1.25 markah)
+            state.q1.score = 0; state.q2.score = 0;
+            
+            for(let [tgt, src] of Object.entries(state.q1.pairs)) {
+                if(document.getElementById(tgt).dataset.v === document.getElementById(src).dataset.v) state.q1.score += 1;
+            }
+            for(let [src, tgt] of Object.entries(state.q2.pairs)) {
+                if(document.getElementById(src).dataset.v === document.getElementById(tgt).dataset.v) state.q2.score += 1.25;
+            }
+
+            let finalScore = state.q1.score + state.q2.score;
+
+            document.getElementById('loading-overlay').style.display = 'flex';
+            document.querySelector('#loading-overlay p').textContent = "Menyimpan markah anda...";
+
+            let p = new URLSearchParams();
+            p.append('Nama', state.student.name); 
+            p.append('Kelas', state.student.cls);
+            p.append('Markah_S1', state.q1.score); 
+            p.append('Markah_S2', state.q2.score);
+            p.append('Jumlah_Markah', finalScore); 
+            p.append('ID', Date.now());
+
+            fetch(SCRIPT_URL, {method:'POST', body: p})
+            .then(() => {
+                document.getElementById('loading-overlay').style.display = 'none';
+                document.getElementById('res-name').textContent = state.student.name;
+                document.getElementById('res-class').textContent = state.student.cls;
+                document.getElementById('res-score').textContent = finalScore + "/10";
+                show('result');
+            }).catch(() => {
+                document.getElementById('loading-overlay').style.display = 'none';
+                alertMsg("Ralat Rangkaian", "Data lambat dihantar, tetapi markah anda adalah " + finalScore + "/10.");
+                document.getElementById('res-name').textContent = state.student.name;
+                document.getElementById('res-score').textContent = finalScore + "/10";
+                show('result');
+            });
+        };
+
+        let clickCount = 0;
+        let clickTimer;
+        document.getElementById('main-title').onclick = () => {
+            clickCount++;
+            if(clickCount === 1) clickTimer = setTimeout(() => clickCount = 0, 1000);
+            if(clickCount === 3) {
+                clearTimeout(clickTimer); clickCount = 0; show('admin');
+            }
+        };
+
+        document.getElementById('btn-login').onclick = () => {
+            if(document.getElementById('admin-pin').value === '1234') {
+                document.getElementById('admin-login').classList.add('hidden');
+                document.getElementById('admin-dash').classList.remove('section-hidden');
+                document.getElementById('admin-pin').value = '';
+                fetchAdminData();
+            } else alertMsg("Keselamatan", "PIN yang dimasukkan adalah salah.");
+        };
+        document.getElementById('btn-logout').onclick = () => {
+            document.getElementById('admin-dash').classList.add('section-hidden');
+            document.getElementById('admin-login').classList.remove('hidden');
+            show('reg');
+        };
+
+        let adminCache = [];
+        function fetchAdminData() {
+            document.getElementById('table-body').innerHTML = '<tr><td colspan="3" class="text-center p-6 text-gray-500 font-bold"><i class="fas fa-spinner fa-spin mr-2"></i>Memuat turun data dari Google Sheet...</td></tr>';
+            fetch(SCRIPT_URL)
+            .then(r => r.json())
+            .then(d => {
+                adminCache = d.data.reverse();
+                renderTable();
+            })
+            .catch(() => {
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="3" class="text-center p-6 text-red-500 font-bold">Gagal berhubung ke Google Sheet.</td></tr>';
+            });
+        }
+
+        function renderTable() {
+            let tBody = document.getElementById('table-body');
+            let filter = document.getElementById('filter-class').value;
+            let list = filter === 'all' ? adminCache : adminCache.filter(x => x.Kelas === filter);
+            
+            if(list.length === 0) {
+                tBody.innerHTML = '<tr><td colspan="3" class="text-center p-6 text-gray-500 font-bold">Tiada murid direkodkan lagi.</td></tr>';
+                return;
+            }
+            
+            tBody.innerHTML = list.map(r => `
+                <tr class="hover:bg-blue-50 transition-colors">
+                    <td class="p-4 font-bold text-gray-800">${r.Nama}</td>
+                    <td class="p-4 text-sm text-gray-600 font-semibold">${r.Kelas}</td>
+                    <td class="p-4 text-center text-lg font-black ${r.Jumlah_Markah==10?'text-green-600':'text-blue-600'}">${r.Jumlah_Markah}/10</td>
+                </tr>
+            `).join('');
+        }
+        document.getElementById('filter-class').onchange = renderTable;
+
+        // Admin Tabs
+        document.getElementById('tab-tetapan').onclick = () => {
+            document.getElementById('view-rekod').classList.add('hidden');
+            document.getElementById('view-tetapan').classList.remove('section-hidden');
+            document.getElementById('tab-tetapan').className = "px-5 py-2 bg-indigo-100 font-bold rounded-lg text-indigo-800 transition-colors";
+            document.getElementById('tab-rekod').className = "px-5 py-2 hover:bg-gray-100 font-bold rounded-lg text-gray-600 transition-colors";
+            renderSettings();
+        };
+        document.getElementById('tab-rekod').onclick = () => {
+            document.getElementById('view-tetapan').classList.add('section-hidden');
+            document.getElementById('view-rekod').classList.remove('hidden');
+            document.getElementById('tab-rekod').className = "px-5 py-2 bg-indigo-100 font-bold rounded-lg text-indigo-800 transition-colors";
+            document.getElementById('tab-tetapan').className = "px-5 py-2 hover:bg-gray-100 font-bold rounded-lg text-gray-600 transition-colors";
+            fetchAdminData();
+        };
+
+        window.deleteClass = function(index) {
+            classList.splice(index, 1);
+            renderSettings();
+            populateSelect();
+        };
+
+        function renderSettings() {
+            let ul = document.getElementById('list-classes');
+            if(classList.length === 0) {
+                ul.innerHTML = '<li class="p-4 text-gray-500 text-center font-bold">Tiada kelas/guru diletakkan.</li>';
+                return;
+            }
+            ul.innerHTML = classList.map((c, i) => `
+                <li class="flex justify-between items-center p-4 hover:bg-gray-50">
+                    <span class="font-bold text-gray-700">${c}</span>
+                    <button onclick="deleteClass(${i})" class="text-red-500 hover:bg-red-100 px-3 py-1 rounded font-bold transition-colors">Padam</button>
+                </li>
+            `).join('');
+        }
+
+        document.getElementById('btn-add-class').onclick = () => {
+            let v = document.getElementById('new-class-input').value.trim();
+            if(v && !classList.includes(v)) { 
+                classList.push(v); 
+                document.getElementById('new-class-input').value = ''; 
+                renderSettings(); populateSelect(); 
+            }
+        };
+
+        document.getElementById('btn-save-settings').onclick = () => {
+            let btn = document.getElementById('btn-save-settings');
+            let origText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menyimpan...';
+            btn.disabled = true;
+
+            let p = new URLSearchParams(); 
+            p.append('action', 'update_classes'); 
+            p.append('classes', JSON.stringify(classList));
+
+            fetch(SCRIPT_URL, { method: 'POST', body: p })
+            .then(() => {
+                alertMsg("Berjaya", "Senarai Kelas / Guru telah berjaya dikemas kini di pangkalan data.");
+            })
+            .catch(() => alertMsg("Berjaya", "Senarai dikemas kini pada website."))
+            .finally(() => {
+                btn.innerHTML = origText;
+                btn.disabled = false;
+            });
+        };
+    </script>
+</body>
+</html>
