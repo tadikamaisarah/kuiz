@@ -7,6 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
+    <!-- Skrip untuk kesan animasi bunga api (Confetti) -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Nunito:wght@400;600;700;800;900&display=swap');
 
@@ -870,16 +873,57 @@
                 document.getElementById('res-subject-label').textContent = `Markah ${subjectName}:`;
                 document.getElementById('res-score').textContent = currentSubjectScore + "/10";
                 show('result');
+                
+                // Lancarkan bunga api jika markah penuh (10/10)
+                if (currentSubjectScore === 10) {
+                    tembakBungaApi();
+                }
             }).catch(() => {
                 document.getElementById('loading-overlay').style.display = 'none';
                 updateMenuUI();
-                alertMsg("Internet Perlahan", "Data lambat dihantar, tetapi markah anda telah dikira.");
+                alertMsg("Ralat Rangkaian", "Data lambat dihantar, tetapi markah anda telah dikira.");
                 document.getElementById('res-name').textContent = state.student.name;
                 document.getElementById('res-class').textContent = state.student.cls;
                 document.getElementById('res-subject-label').textContent = `Markah ${subjectName}:`;
                 document.getElementById('res-score').textContent = currentSubjectScore + "/10";
                 show('result');
+                
+                // Lancarkan bunga api jika markah penuh walaupun terdapat ralat internet
+                if (currentSubjectScore === 10) {
+                    tembakBungaApi();
+                }
             });
+        }
+
+        // Fungsi khas melancarkan bunga api
+        function tembakBungaApi() {
+            var duration = 3000; // Tempoh bunga api (3 saat)
+            var end = Date.now() + duration;
+
+            (function frame() {
+                // Tembak dari kiri
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'],
+                    zIndex: 9999
+                });
+                // Tembak dari kanan
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'],
+                    zIndex: 9999
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
         }
 
         let clickCount = 0; let clickTimer;
