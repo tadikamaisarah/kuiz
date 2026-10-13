@@ -573,6 +573,10 @@
         };
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Pulihkan nama dari memori browser jika ada
+            let savedName = localStorage.getItem('kuiz_student_name');
+            if(savedName) document.getElementById('student-name').value = savedName;
+
             fetch(`${SCRIPT_URL}?action=get_classes`)
             .then(res => res.json())
             .then(data => {
@@ -593,6 +597,12 @@
             classList.forEach(c => html += `<option value="${c}">${c}</option>`);
             document.getElementById('student-class').innerHTML = html;
             document.getElementById('filter-class').innerHTML = '<option value="all">Tunjuk Semua</option>' + html;
+
+            // Pulihkan pilihan kelas dari memori browser jika ia wujud dalam senarai
+            let savedClass = localStorage.getItem('kuiz_student_class');
+            if(savedClass && classList.includes(savedClass)) {
+                document.getElementById('student-class').value = savedClass;
+            }
         }
 
         // --- Sistem SVG Garisan ---
@@ -728,6 +738,10 @@
             e.preventDefault();
             state.student.name = document.getElementById('student-name').value.trim();
             state.student.cls = document.getElementById('student-class').value;
+
+            // Simpan maklumat ke memori browser
+            localStorage.setItem('kuiz_student_name', state.student.name);
+            localStorage.setItem('kuiz_student_class', state.student.cls);
 
             document.getElementById('loading-overlay').style.display = 'flex';
             document.querySelector('#loading-overlay p').textContent = "Menyemak rekod lepas...";
