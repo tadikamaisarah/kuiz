@@ -6,6 +6,7 @@
     <title>Kuiz Matematik Interaktif</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap');
 
@@ -77,8 +78,8 @@
     </div>
 
     <header class="bg-green-500 text-white p-4 text-center shadow-md relative z-40">
-        <h1 id="main-title" class="text-3xl md:text-4xl font-extrabold comic-font drop-shadow-md cursor-pointer select-none">Mari Belajar Kira!</h1>
-        <p class="font-bold text-green-100 mt-1">Latihan Matematik Menyeronokkan</p>
+        <h1 id="main-title" class="text-3xl md:text-4xl font-extrabold comic-font drop-shadow-md cursor-pointer select-none">MARI KITA BELAJAR</h1>
+        <p class="font-bold text-green-100 mt-1">Latihan kuiz yang menyeronokkan.</p>
     </header>
 
     <main class="flex-grow flex flex-col items-center p-3 md:p-6 w-full max-w-4xl mx-auto pb-20">
@@ -230,12 +231,15 @@
                 </div>
                 
                 <div id="view-rekod">
-                    <div class="flex items-center gap-3 mb-4 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                    <div class="flex flex-wrap items-center gap-3 mb-4 bg-gray-50 p-3 rounded-lg border border-gray-200">
                         <i class="fas fa-filter text-gray-400"></i>
-                        <select id="filter-class" class="p-2 border border-gray-300 rounded-lg w-full max-w-xs font-bold text-gray-700 focus:outline-none focus:border-indigo-500">
+                        <select id="filter-class" class="p-2 border border-gray-300 rounded-lg flex-grow max-w-xs font-bold text-gray-700 focus:outline-none focus:border-indigo-500">
                             <option value="all">Semua Kelas</option>
                         </select>
-                        <button onclick="fetchAdminData()" class="ml-auto bg-white border border-gray-300 p-2 rounded-lg hover:bg-gray-100 text-gray-600"><i class="fas fa-sync-alt"></i></button>
+                        <button onclick="fetchAdminData()" class="bg-white border border-gray-300 p-2 rounded-lg hover:bg-gray-100 text-gray-600" title="Muat Semula"><i class="fas fa-sync-alt"></i></button>
+                        <button id="btn-whatsapp" class="ml-auto w-full md:w-auto justify-center bg-green-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-green-600 transition-colors flex items-center gap-2 shadow-sm">
+                            <i class="fab fa-whatsapp text-xl"></i> Kongsi ke WhatsApp
+                        </button>
                     </div>
                     <div class="overflow-x-auto rounded-lg border border-gray-200">
                         <table class="w-full text-left border-collapse min-w-[500px]">
@@ -556,6 +560,32 @@
                 btn.innerHTML = origText;
                 btn.disabled = false;
             });
+        };
+
+        document.getElementById('btn-whatsapp').onclick = () => {
+            let filter = document.getElementById('filter-class').value;
+            let list = filter === 'all' ? adminCache : adminCache.filter(x => x.Kelas === filter);
+            
+            if(list.length === 0) {
+                alertMsg("Tiada Data", "Tiada rekod untuk dikongsi buat masa ini.");
+                return;
+            }
+            
+            let className = filter === 'all' ? "Semua Kelas" : filter;
+            
+            // Format mesej WhatsApp
+            let message = `*Rekod Markah Kuiz Matematik*\n*Kelas / Guru:* ${className}\n\n`;
+            
+            list.forEach((r, index) => {
+                let statusMarkah = r.Jumlah_Markah === 10 ? "⭐ Tepat!" : "";
+                message += `${index + 1}. ${r.Nama} - *${r.Jumlah_Markah}/10* ${statusMarkah}\n`;
+            });
+            
+            message += `\n_Tahniah kepada semua murid!_`;
+            
+            // Buka pautan ke WhatsApp
+            let whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
         };
     </script>
 </body>
